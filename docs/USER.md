@@ -58,6 +58,14 @@ Response Body (Error - 409 Conflict) :
 }
 ```
 
+Response Body (Error - 429 Too Many Request) :
+```json
+{
+  "status": "error",
+  "message": "Rate limit exceeded. Try again after some time."
+}
+```
+
 Response Body (Error - 500 Internal Server) :
 ```json
 {
@@ -97,6 +105,14 @@ Response Body (Error - 401 Unauthorized) :
 {
   "status": "error",
   "message": "Invalid username or password"
+}
+```
+
+Response Body (Error - 429 Too Many Request) :
+```json
+{
+  "status": "error",
+  "message": "Rate limit exceeded. Try again after some time."
 }
 ```
 
@@ -143,6 +159,14 @@ Response Body (Error - 404 Not Found) :
 {
   "status": "error",
   "message": "User not found."
+}
+```
+
+Response Body (Error - 429 Too Many Request) :
+```json
+{
+  "status": "error",
+  "message": "Rate limit exceeded. Try again after some time."
 }
 ```
 
@@ -208,6 +232,14 @@ Response Body (Error 409 Conflict) :
 }
 ```
 
+Response Body (Error - 429 Too Many Request) :
+```json
+{
+  "status": "error",
+  "message": "Rate limit exceeded. Try again after some time."
+}
+```
+
 ## Logout User
 Endpoint :  POST /api/auth/logout
 
@@ -227,6 +259,14 @@ Response Body (Error - 401 Unauthorized) :
 {
   "status": "error",
   "message": "Unauthorized access. Please provide a valid token."
+}
+```
+
+Response Body (Error - 429 Too Many Request) :
+```json
+{
+  "status": "error",
+  "message": "Rate limit exceeded. Try again after some time."
 }
 ```
 

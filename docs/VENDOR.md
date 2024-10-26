@@ -58,6 +58,14 @@ Response Body (Error - 409 Conflict) :
 }
 ```
 
+Response Body (Error - 429 Too Many Request) :
+```json
+{
+  "status": "error",
+  "message": "Rate limit exceeded. Try again after some time."
+}
+```
+
 Response Body (Error - 500 Internal Server) :
 ```json
 {
@@ -122,6 +130,14 @@ Response Body (Error - 409 Conflict) :
 }
 ```
 
+Response Body (Error - 429 Too Many Request) :
+```json
+{
+  "status": "error",
+  "message": "Rate limit exceeded. Try again after some time."
+}
+```
+
 Response Body (Error - 500 Internal Server) :
 ```json
 {
@@ -166,6 +182,14 @@ Response Body (Error - 404 Not Found) :
 {
   "status": "error",
   "message": "Vendor not found"
+}
+```
+
+Response Body (Error - 429 Too Many Request) :
+```json
+{
+  "status": "error",
+  "message": "Rate limit exceeded. Try again after some time."
 }
 ```
 
@@ -233,6 +257,14 @@ Response Body (Error - 404 Not Found) :
 }
 ```
 
+Response Body (Error - 429 Too Many Request) :
+```json
+{
+  "status": "error",
+  "message": "Rate limit exceeded. Try again after some time."
+}
+```
+
 Response Body (Error - 500 Internal Server) :
 ```json
 {
@@ -268,6 +300,14 @@ Response Body (Error - 404 Not Found)
 {
   "status": "error",
   "message": "Vendor not found"
+}
+```
+
+Response Body (Error - 429 Too Many Request) :
+```json
+{
+  "status": "error",
+  "message": "Rate limit exceeded. Try again after some time."
 }
 ```
 
