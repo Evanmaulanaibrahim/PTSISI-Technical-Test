@@ -2,8 +2,9 @@
 
 ## Register User
 
-- Endpoint : POST /api/users
-- Request Body : 
+Endpoint : POST /api/users
+
+Request Body :
 ```json
 {
   "username" : "Evanmaulanaibrahim",
@@ -12,7 +13,8 @@
   "retypePassword" : "Admin001"
 }
 ```
-- Response Body (Success) :
+
+Response Body (Success) :
 ```json
 {
   "status" : "success",
@@ -25,7 +27,8 @@
   }
 }
 ```
-- Response Body (Error - 404 Bad Request) :
+
+Response Body (Error - 404 Bad Request) :
 ```json
 {
   "status" : "error",
@@ -46,14 +49,16 @@
   ]
 }
 ```
-- Response Body (Error - 409 Conflict) :
+
+Response Body (Error - 409 Conflict) :
 ```json
 {
   "status" : "error",
   "message" : "Username already exists"
 }
 ```
-- Response Body (Error - 500 Internal Server)
+
+Response Body (Error - 500 Internal Server) :
 ```json
 {
   "status" : "error",
@@ -63,15 +68,17 @@
 
 ## Login User
 
-- Endpoint : POST /api/auth/login
-- Request Body :
+Endpoint : POST /api/auth/login
+
+Request Body :
 ```json
 {
   "username" : "Evanmaulanaibrahim",
   "password" : "Admin001"
 }
 ```
-- Response Body (Success) :
+
+Response Body (Success) :
 ```json
 {
   "status": "success",
@@ -84,31 +91,16 @@
   }
 }
 ```
-- Response Body (Error - 401 Unauthorized) :
+
+Response Body (Error - 401 Unauthorized) :
 ```json
 {
   "status": "error",
   "message": "Invalid username or password"
 }
 ```
-- Response Body (Error - 400 Bad Request) : 
-```json
-{
-  "status": "error",
-  "message": "Validation error",
-  "errors": [
-    {
-      "field": "username",
-      "message": "Username is required"
-    },
-    {
-      "field": "password",
-      "message": "Password is required"
-    }
-  ]
-}
-```
-- Response Body (Error - 500 Internal Server Error) :
+
+Response Body (Error - 500 Internal Server Error) :
 ```json
 {
   "status": "error",
@@ -117,12 +109,12 @@
 ```
 
 ## Get User
-- Endpoint : GET /api/users/current
+Endpoint : GET /api/users/current
 
-- Request Header :
+Request Header :
 - X-API-TOKEN : Token (Mandatory)
 
-- Response Body (Success) :
+Response Body (Success) :
 ```json
 {
   "status": "success",
@@ -137,14 +129,16 @@
   }
 }
 ```
-- Response Body (Error - 401 Unauthorized) :
+
+Response Body (Error - 401 Unauthorized) :
 ```json
 {
   "status": "error",
   "message": "Unauthorized access. Please provide a valid token."
 }
 ```
-- Response Body (Error - 404 Not Found) :
+
+Response Body (Error - 404 Not Found) :
 ```json
 {
   "status": "error",
@@ -152,13 +146,21 @@
 }
 ```
 
-## Update User
-- Endpoint : PATCH /api/users/current
+Response Body (Error - 500 Internal Server Error) :
+```json
+{
+  "status": "error",
+  "message": "An unexpected error occurred. Please try again later."
+}
+```
 
-- Request Header :
+## Update User
+Endpoint : PATCH /api/users/current
+
+Request Header :
 - X-API-TOKEN : Token (Mandatory)
 
-- Request Body :
+Request Body :
 ```json
 {
   "fullname": "Evan Maulana Ibrahim New",
@@ -167,7 +169,7 @@
 }
 ```
 
-- Response Body (Success) :
+Response Body (Success) :
 ```json
 {
   "status": "success",
@@ -182,7 +184,7 @@
 }
 ```
 
-- Response Body (Error 400 Bad Request) :
+Response Body (Error 400 Bad Request) :
 ```json
 {
   "status": "error",
@@ -190,7 +192,7 @@
 }
 ```
 
-- Response Body (Error 401 Unauthorized) :
+Response Body (Error 401 Unauthorized) :
 ```json
 {
   "status": "error",
@@ -198,7 +200,7 @@
 }
 ```
 
-- Response Body (Error 409 Conflict) :
+Response Body (Error 409 Conflict) :
 ```json
 {
   "status": "error",
@@ -207,15 +209,31 @@
 ```
 
 ## Logout User
-- Endpoint :  POST /api/auth/logout
+Endpoint :  POST /api/auth/logout
 
-- Request Header :
+Request Header :
 - X-API-TOKEN : Token (Mandatory)
 
-- Response Body (Success) :
+Response Body (Success) :
 ```json
 {
   "status": "success",
   "message": "User logged out successfully"
+}
+```
+
+Response Body (Error - 401 Unauthorized) :
+```json
+{
+  "status": "error",
+  "message": "Unauthorized access. Please provide a valid token."
+}
+```
+
+Response Body (Error - 500 Internal Server Error) :
+```json
+{
+  "status": "error",
+  "message": "An unexpected error occurred. Please try again later."
 }
 ```
