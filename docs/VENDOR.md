@@ -183,24 +183,37 @@ Endpoint : GET /api/vendors
 Request Header :
 - X-API-TOKEN : Token (Mandatory)
 
-Request Parameter :
-- Query : vendorname or part of the name (Optional)
+Query Parameter :
+- name : String, vendor name, using like query, optional
+- email : String, vendor email, using like query, optional
+- address : String, vendor address, using like query, optional
+- phone : Integer, vendor phone, using like query, optional
+- page : Integer, start from 0, default 0
+- size : Integer, default 10
 
 Response Body (Success) :
 ```json
 {
   "status": "success",
   "message": "Vendors retrieved successfully",
-  "data": [
-    {
-      "vendorId": "a1b2c3d4-e5f6-7890-1234-56789abcdef0",
-      "vendorname": "The Gade Coffee Bogor",
-      "email": "info@thegade.com",
-      "address": "Kota Bogor",
-      "phone": "08001",
-      "createdAt": "2024-10-25T10:00:00Z"
+  "data": {
+    "vendors": [
+      {
+        "vendorId": "a1b2c3d4-e5f6-7890-1234-56789abcdef0",
+        "vendorname": "The Gade Coffee Bogor",
+        "email": "info@thegade.com",
+        "address": "Kota Bogor",
+        "phone": "08001",
+        "createdAt": "2024-10-25T10:00:00Z"
+      }
+    ],
+    "pagination": {
+      "page": 1,
+      "pageSize": 10,
+      "totalPages": 5,
+      "totalItems": 50
     }
-  ]
+  }
 }
 ```
 
