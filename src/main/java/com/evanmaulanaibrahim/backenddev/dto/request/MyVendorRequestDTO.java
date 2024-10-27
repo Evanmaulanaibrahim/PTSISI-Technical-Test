@@ -1,20 +1,20 @@
-package com.evanmaulanaibrahim.backenddev.dto.response;
+package com.evanmaulanaibrahim.backenddev.dto.request;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class VendorDTO {
-    private UUID vendorId;
+@NoArgsConstructor
+@Builder
+public class MyVendorRequestDTO {
+//    private UUID userId;
     private String vendorName;
-    private String vendorAddress;
     private String vendorEmail;
     private String vendorPhone;
-    private UUID userId; // Include userId if needed
+    private String vendorAddress;
 }
-

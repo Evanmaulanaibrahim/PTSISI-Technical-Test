@@ -1,28 +1,38 @@
 package com.evanmaulanaibrahim.backenddev.service;
 
 import com.evanmaulanaibrahim.backenddev.dto.request.CreateVendorRequest;
+import com.evanmaulanaibrahim.backenddev.dto.request.MyVendorRequestDTO;
 import com.evanmaulanaibrahim.backenddev.dto.request.UpdateVendorRequest;
 import com.evanmaulanaibrahim.backenddev.dto.response.MessageResponse;
+import com.evanmaulanaibrahim.backenddev.dto.response.MyVendorResDTO;
 import com.evanmaulanaibrahim.backenddev.dto.response.ResponseBodyDTO;
 import com.evanmaulanaibrahim.backenddev.dto.response.VendorDTO;
+import com.evanmaulanaibrahim.backenddev.exception.classes.DataNotFoundException;
 import com.evanmaulanaibrahim.backenddev.exception.classes.UnauthorizedUserException;
 import com.evanmaulanaibrahim.backenddev.model.User;
 import com.evanmaulanaibrahim.backenddev.model.Vendor;
 import com.evanmaulanaibrahim.backenddev.repository.UsersRepository;
 import com.evanmaulanaibrahim.backenddev.repository.VendorsRepository;
 import com.evanmaulanaibrahim.backenddev.security.service.UserDetailsImplement;
+import com.evanmaulanaibrahim.backenddev.service.specification.VendorSpesification;
 import jakarta.persistence.EntityNotFoundException;
 import lib.i18n.utility.MessageUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -128,7 +138,43 @@ public class VendorsService {
                 .build();
     }
 
+    public ResponseEntity<ResponseBodyDTO> getMyVendor(MyVendorRequestDTO myVendorRequestDTO, Pageable page) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (!(authentication.getPrincipal() instanceof UserDetailsImplement)) {
+            throw new UnauthorizedUserException(messageUtil.get("application.error.unauthorized-user.detail"));
+        }
 
+        UserDetailsImplement userDetails = (UserDetailsImplement) authentication.getPrincipal();
+        UUID userId = userDetails.getId();
 
+        Specification<Vendor> vendorSpec = VendorSpesification.vendorFilter(myVendorRequestDTO, userId);
+
+        Page<Vendor> vendors = vendorsRepository.findAll(vendorSpec, page);
+
+        if (vendors.isEmpty()) {
+            throw new DataNotFoundException(messageUtil.get("application.error.data-not-found"));
+        }
+
+        long totalData = vendors.getTotalElements();
+        List<MyVendorResDTO> response = vendors.getContent().stream()
+                .map(vendor -> new MyVendorResDTO(
+                        vendor.getVendorId(),
+                        vendor.getVendorName(),
+                        vendor.getVendorEmail(),
+                        vendor.getVendorAddress(),
+                        vendor.getVendorPhone()
+                ))
+                .collect(Collectors.toList());
+
+        ResponseBodyDTO responseBody = ResponseBodyDTO.builder()
+                .total(totalData)
+                .data(response)
+                .message(messageUtil.get("application.success.load", "My Vendor"))
+                .statusCode(HttpStatus.OK.value())
+                .status(HttpStatus.OK.getReasonPhrase())
+                .build();
+
+        return new ResponseEntity<>(responseBody, HttpStatus.OK);
+    }
 
 }

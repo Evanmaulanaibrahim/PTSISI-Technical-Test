@@ -1,11 +1,15 @@
 package com.evanmaulanaibrahim.backenddev.controller.vendormanagement;
 
 import com.evanmaulanaibrahim.backenddev.dto.request.CreateVendorRequest;
+import com.evanmaulanaibrahim.backenddev.dto.request.MyVendorRequestDTO;
 import com.evanmaulanaibrahim.backenddev.dto.request.UpdateVendorRequest;
 import com.evanmaulanaibrahim.backenddev.dto.response.MessageResponse;
 import com.evanmaulanaibrahim.backenddev.dto.response.ResponseBodyDTO;
 import com.evanmaulanaibrahim.backenddev.service.VendorsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -35,5 +39,14 @@ public class VendorsController {
         ResponseBodyDTO response = vendorsService.getVendorById(vendorId);
         return new ResponseEntity<>(response, HttpStatus.valueOf((int) response.getStatusCode()));
     }
+
+    @GetMapping("/vendors")
+    public ResponseEntity<ResponseBodyDTO> getAllVendors(
+            @PageableDefault(page = 0, size = 8, sort = "vendorName", direction = Sort.Direction.ASC) Pageable page,
+            @ModelAttribute MyVendorRequestDTO myVendorRequestDTO) {
+
+        return vendorsService.getMyVendor(myVendorRequestDTO, page);
+    }
+
 
 }
