@@ -1,10 +1,14 @@
 package com.evanmaulanaibrahim.backenddev.service;
 
+import com.evanmaulanaibrahim.backenddev.dto.request.LoginRequest;
 import com.evanmaulanaibrahim.backenddev.dto.request.RegisterRequest;
+import com.evanmaulanaibrahim.backenddev.dto.response.ApiDataResponseBuilder;
+import com.evanmaulanaibrahim.backenddev.dto.response.JwtResponse;
 import com.evanmaulanaibrahim.backenddev.dto.response.MessageResponse;
 import com.evanmaulanaibrahim.backenddev.model.User;
 import com.evanmaulanaibrahim.backenddev.repository.UsersRepository;
 import com.evanmaulanaibrahim.backenddev.security.jwt.JwtUtils;
+import com.evanmaulanaibrahim.backenddev.security.service.UserDetailsImplement;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import lib.i18n.utility.MessageUtil;
@@ -12,11 +16,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
 import java.util.Set;
 
 @Slf4j
@@ -85,6 +94,47 @@ public class UsersService {
         String successMessage = messageUtil.get("application.success.add.user", request.getUsername());
         return new MessageResponse(successMessage, HttpStatus.OK.value(), "OK");
 
+    }
+
+    public ApiDataResponseBuilder signIn(LoginRequest loginRequest) {
+        if (Boolean.FALSE.equals(userRepository.existsByUsername(loginRequest.getUsername()))) {
+            return ApiDataResponseBuilder.builder()
+                    .message(messageUtil.get("application.error.auth.user.not-found"))
+                    .statusCode(HttpStatus.UNAUTHORIZED.value())
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .build();
+        }
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            String jwt = jwtUtils.generateJwtToken(authentication);
+
+            UserDetailsImplement userDetails = (UserDetailsImplement) authentication.getPrincipal();
+            Optional<String> roles = userDetails.getAuthorities().stream()
+                    .map(item -> item.getAuthority())
+                    .findFirst();
+
+            return ApiDataResponseBuilder.builder()
+                    .data(new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(), roles.get()))
+                    .message(messageUtil.get("application.success.auth.user"))
+                    .statusCode(statusOK.value())
+                    .status(statusOK)
+                    .build();
+        } catch (AuthenticationException e) {
+            return ApiDataResponseBuilder.builder()
+                    .message(messageUtil.get("application.error.auth.user"))
+                    .statusCode(HttpStatus.UNAUTHORIZED.value())
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .build();
+        } catch (Exception e) {
+            return ApiDataResponseBuilder.builder()
+                    .message(messageUtil.get("application.error.internal"))
+                    .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .build();
+        }
     }
 
 
