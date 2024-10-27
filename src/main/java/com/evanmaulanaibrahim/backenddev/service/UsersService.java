@@ -1,0 +1,91 @@
+package com.evanmaulanaibrahim.backenddev.service;
+
+import com.evanmaulanaibrahim.backenddev.dto.request.RegisterRequest;
+import com.evanmaulanaibrahim.backenddev.dto.response.MessageResponse;
+import com.evanmaulanaibrahim.backenddev.model.User;
+import com.evanmaulanaibrahim.backenddev.repository.UsersRepository;
+import com.evanmaulanaibrahim.backenddev.security.jwt.JwtUtils;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
+import lib.i18n.utility.MessageUtil;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Set;
+
+@Slf4j
+@Service
+public class UsersService {
+    @Autowired
+    private UsersRepository userRepository;
+
+    @Autowired
+    private Validator validator;
+
+    @Autowired
+    private MessageUtil messageUtil;
+
+    @Autowired
+    AuthenticationManager authenticationManager;
+
+    @Autowired
+    PasswordEncoder encoder;
+
+    @Autowired
+    JwtUtils jwtUtils;
+
+    final HttpStatus statusOK = HttpStatus.OK;
+
+    @Transactional
+    public MessageResponse register(RegisterRequest request) {
+        Set<ConstraintViolation<RegisterRequest>> constraintViolations = validator.validate(request);
+
+        if (!constraintViolations.isEmpty()) {
+            ConstraintViolation<RegisterRequest> firstViolation = constraintViolations.iterator().next();
+            String errorMessage = firstViolation.getMessage();
+            return new MessageResponse(errorMessage, HttpStatus.BAD_REQUEST.value(), "ERROR");
+        }
+
+        log.info("Received registration request: {}", request);
+
+        if (userRepository.existsByUsername(request.getUsername())) {
+            String errorMessage = messageUtil.get("application.error.already-exist.user");
+            return new MessageResponse(errorMessage, HttpStatus.BAD_REQUEST.value(), "ERROR");
+        }
+
+        if (!request.getPassword().equals(request.getRetypePassword())) {
+            String errorMessage = messageUtil.get("application.error.password-not-match.user");
+            return new MessageResponse(errorMessage, HttpStatus.BAD_REQUEST.value(), "ERROR");
+        }
+
+        if (request.getPassword().length() < 6) {
+            String errorMessage = messageUtil.get("application.error.password-validation.user");
+            return new MessageResponse(errorMessage, HttpStatus.BAD_REQUEST.value(), "ERROR");
+        }
+
+        User user = User.builder()
+                .username(request.getUsername())
+                .fullname(request.getFullname())
+                .email(request.getEmail())
+                .password(BCrypt.hashpw(request.getPassword(), BCrypt.gensalt()))
+                .role("User")
+                .isDeleted(false)
+                .build();
+
+        userRepository.save(user);
+
+        log.info("Received user: {}", user);
+
+        String successMessage = messageUtil.get("application.success.add.user", request.getUsername());
+        return new MessageResponse(successMessage, HttpStatus.OK.value(), "OK");
+
+    }
+
+
+}

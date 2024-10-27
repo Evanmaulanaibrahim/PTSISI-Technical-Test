@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:latest
+    container_name: my-mysql-backend
+    environment:
+      MYSQL_USER: evanmaulanaibr        # Ganti dengan nama pengguna yang diinginkan
+      MYSQL_PASSWORD: qwerty1234        # Ganti dengan kata sandi yang diinginkan
+      MYSQL_ROOT_PASSWORD: rootpassword # Password untuk user root
+      MYSQL_DATABASE: backend           # Ganti dengan nama database yang diinginkan
+    volumes:
+      - mysql-data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    restart: always
+
+volumes:
+  mysql-data:
