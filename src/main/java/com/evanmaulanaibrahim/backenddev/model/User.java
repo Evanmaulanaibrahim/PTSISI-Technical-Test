@@ -10,6 +10,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.sql.Timestamp;
+import java.util.Set;
 import java.util.UUID;
 
 @Data
@@ -58,5 +59,8 @@ public class User {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "modified_time", length = 29)
     private Timestamp modifiedTime;
+
+    @OneToMany(mappedBy = "user")
+    private Set<Vendor> vendors;
 
 }

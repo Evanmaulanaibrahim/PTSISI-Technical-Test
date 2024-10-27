@@ -15,20 +15,26 @@ import java.util.UUID;
 @Entity
 @Builder
 @EntityListeners(AuditingEntityListener.class)
+@Table(name = "vendors")
 public class Vendor {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID vendorId;
 
-    @Column(name = "vendorName", nullable = false, unique = true, length = 100)
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+
+    @Column(name = "vendor_name", nullable = false, unique = true, length = 100)
     private String vendorName;
 
-    @Column(name = "vendorAddress", nullable = false, length = 100)
+    @Column(name = "vendor_address", nullable = false, length = 100)
     private String vendorAddress;
 
-    @Column(name = "vendorEmail", nullable = false, length = 100)
+    @Column(name = "vendor_email", nullable = false, length = 100)
     private String vendorEmail;
 
-    @Column(name = "vendorPhone", nullable = false, length = 100)
+    @Column(name = "vendor_phone", nullable = false, length = 100)
     private String vendorPhone;
 }
