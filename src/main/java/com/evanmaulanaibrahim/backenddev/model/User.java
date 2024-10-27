@@ -10,18 +10,19 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.sql.Timestamp;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
 @Builder
+@Entity
 @EntityListeners(AuditingEntityListener.class)
-
 @Table(name = "users")
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID userId;
@@ -48,19 +49,17 @@ public class User {
     private String createdBy;
 
     @CreatedDate
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "created_time", length = 29)
+    @Column(name = "created_time", updatable = false)
     private Timestamp createdTime;
 
     @Column(name = "modified_by")
     private String modifiedBy;
 
     @LastModifiedDate
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "modified_time", length = 29)
+    @Column(name = "modified_time")
     private Timestamp modifiedTime;
 
-    @OneToMany(mappedBy = "user")
-    private Set<Vendor> vendors;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<Vendor> vendors = new HashSet<>();
 
 }
