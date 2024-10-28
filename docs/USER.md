@@ -2,13 +2,14 @@
 
 ## Register User
 
-Endpoint : POST /api/users
+Endpoint : POST /api/user-management/users/sign-up
 
 Request Body :
 ```json
 {
-  "username" : "Evanmaulanaibrahim",
+  "username" : "Admin001",
   "fullname" : "Evan Maulana Ibrahim",
+  "email" : "Admin001@gmail.com",
   "password" : "Admin001",
   "retypePassword" : "Admin001"
 }
@@ -17,71 +18,47 @@ Request Body :
 Response Body (Success) :
 ```json
 {
-  "status" : "success",
-  "message" : "User registered successfully",
-  "data" : {
-    "userId" : "a1b2c3d4-e5f6-7890-1234-56789abcdef0",
-    "username" : "Evanmaulanaibrahim",
-    "fullname" : "Evan Maulana Ibrahim",
-    "createdAt" : "2024-10-25T10:00:00Z"
-  }
+  "message" : "Berhasil menambahkan Admin001",
+  "statusCode" : 200,
+  "status" : "OK"
 }
 ```
 
-Response Body (Error - 404 Bad Request) :
+Response Body (Error Bad Request) :
 ```json
 {
-  "status" : "error",
-  "message" : "validation error",
-  "errors": [
-    {
-      "field": "username",
-      "message": "Username must be at least 4 characters"
-    },
-    {
-      "field": "password",
-      "message": "Password must contain at least 8 characters"
-    },
-    {
-      "field": "retypePassword",
-      "message": "Passwords do not match"
-    }
-  ]
+  "message" : "Format belum sesuai",
+  "statusCode" : 400,
+  "status": "Error"
 }
 ```
 
-Response Body (Error - 409 Conflict) :
+Response Body (Error Duplicate/Conflict) :
 ```json
 {
-  "status" : "error",
-  "message" : "Username already exists"
+  "message" : "Username telah digunakan oleh user yang telah mendaftar sebelumnya",
+  "statusCode" : 400,
+  "status" : "ERROR"
 }
 ```
 
-Response Body (Error - 429 Too Many Request) :
+Response Body (Error Internal Server) :
 ```json
 {
-  "status": "error",
-  "message": "Rate limit exceeded. Try again after some time."
-}
-```
-
-Response Body (Error - 500 Internal Server) :
-```json
-{
-  "status" : "error",
-  "message" : "An unexpected error occurred. Please try again later."
+  "message" : "Kesalahan terjadi saat memproses permintaan!",
+  "statusCode" : 500,
+  "status" : "ERROR"
 }
 ```
 
 ## Login User
 
-Endpoint : POST /api/auth/login
+Endpoint : POST /api/user-management/users/sign-in
 
 Request Body :
 ```json
 {
-  "username" : "Evanmaulanaibrahim",
+  "username" : "Admin001",
   "password" : "Admin001"
 }
 ```
@@ -89,191 +66,54 @@ Request Body :
 Response Body (Success) :
 ```json
 {
-  "status": "success",
-  "message": "Login successful",
   "data": {
-    "userId": "a1b2c3d4-e5f6-7890-1234-56789abcdef0",
-    "username": "Evanmaulanaibrahim",
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhdXRoIiwidXNlcklkIjoiYTFiMmMzZDQtZTVmNi03ODkwLTEyMzQtNTY3ODlhYmNkZWYwIiwiaWF0IjoxNjAxMjM0NTY3LCJleHAiOjE2MDEyNzg5Njd9.W8fAsdflkQj8Fjfjls8wGdGFI0LKtf0Pqsdf-dfgJkE",
-    "tokenExpiry": "2024-10-25T16:00:00Z"
-  }
+    "id": "8455dd9b-ff97-4678-84bd-e760ba14c66c",
+    "token" : "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBZG1pbjAwMSIsImlhdCI6MTczMDA4Nzg5NCwiZXhwIjoxNzMwMTc0Mjk0fQ.f_mwn8ZACk3vuSXRjmzHm1bM5woYPQXYXfRMWOEtzCE",
+    "type": "Bearer",
+    "username" : "Admin001",
+    "role" : "user"
+  },
+  "message" : "Auth User Success",
+  "statusCode" : 200,
+  "status" : "OK"
 }
 ```
 
-Response Body (Error - 401 Unauthorized) :
+Response Body (Error Auth) :
 ```json
 {
-  "status": "error",
-  "message": "Invalid username or password"
+  "data": null,
+  "message": "Username tidak terdaftar",
+  "statusCode" : 401,
+  "status" : "UNAUTHORIZED"
 }
 ```
 
-Response Body (Error - 429 Too Many Request) :
 ```json
 {
-  "status": "error",
-  "message": "Rate limit exceeded. Try again after some time."
+  "data": null,
+  "message": "Kata sandi tidak sesuai",
+  "statusCode" : 401,
+  "status" : "UNAUTHORIZED"
 }
 ```
 
-Response Body (Error - 500 Internal Server Error) :
+Response Body (Error Rate Limit) :
 ```json
 {
-  "status": "error",
-  "message": "An unexpected error occurred. Please try again later."
+  "data": null,
+  "message": "Rate limit exceeded. Try again later.",
+  "statusCode" : 429,
+  "status" : "TOO_MANY_REQUESTS"
 }
 ```
 
-## Get User
-Endpoint : GET /api/users/current
-
-Request Header :
-- X-API-TOKEN : Token (Mandatory)
-
-Response Body (Success) :
+Response Body (Error Internal Server) :
 ```json
 {
-  "status": "success",
-  "message": "User details retrieved successfully",
-  "data": {
-    "userId": "a1b2c3d4-e5f6-7890-1234-56789abcdef0",
-    "username": "Evanmaulanaibrahim",
-    "fullname": "Evan Maulana Ibrahim",
-    "email": "evanmaulanaibrahim@gmail.com",
-    "createdAt": "2024-10-25T10:00:00Z",
-    "updatedAt": "2024-10-26T08:15:00Z"
-  }
-}
-```
-
-Response Body (Error - 401 Unauthorized) :
-```json
-{
-  "status": "error",
-  "message": "Unauthorized access. Please provide a valid token."
-}
-```
-
-Response Body (Error - 404 Not Found) :
-```json
-{
-  "status": "error",
-  "message": "User not found."
-}
-```
-
-Response Body (Error - 429 Too Many Request) :
-```json
-{
-  "status": "error",
-  "message": "Rate limit exceeded. Try again after some time."
-}
-```
-
-Response Body (Error - 500 Internal Server Error) :
-```json
-{
-  "status": "error",
-  "message": "An unexpected error occurred. Please try again later."
-}
-```
-
-## Update User
-Endpoint : PATCH /api/users/current
-
-Request Header :
-- X-API-TOKEN : Token (Mandatory)
-
-Request Body :
-```json
-{
-  "fullname": "Evan Maulana Ibrahim New",
-  "email": "evanmaulanaibrahim@gmail.com",
-  "password": "newAdmin001"
-}
-```
-
-Response Body (Success) :
-```json
-{
-  "status": "success",
-  "message": "User details updated successfully",
-  "data": {
-    "userId": "a1b2c3d4-e5f6-7890-1234-56789abcdef0",
-    "username": "Evanmaulanaibrahim",
-    "fullname": "Evan Maulana Ibrahim New",
-    "email": "evanmaulanaibrahim@gmail.com",
-    "updatedAt": "2024-10-25T15:00:00Z"
-  }
-}
-```
-
-Response Body (Error 400 Bad Request) :
-```json
-{
-  "status": "error",
-  "message": "Invalid input. Ensure fullname, email, and password follow the required format."
-}
-```
-
-Response Body (Error 401 Unauthorized) :
-```json
-{
-  "status": "error",
-  "message": "Unauthorized access. Please provide a valid token."
-}
-```
-
-Response Body (Error 409 Conflict) :
-```json
-{
-  "status": "error",
-  "message": "The email provided is already in use. Please use a different email."
-}
-```
-
-Response Body (Error - 429 Too Many Request) :
-```json
-{
-  "status": "error",
-  "message": "Rate limit exceeded. Try again after some time."
-}
-```
-
-## Logout User
-Endpoint :  POST /api/auth/logout
-
-Request Header :
-- X-API-TOKEN : Token (Mandatory)
-
-Response Body (Success) :
-```json
-{
-  "status": "success",
-  "message": "User logged out successfully"
-}
-```
-
-Response Body (Error - 401 Unauthorized) :
-```json
-{
-  "status": "error",
-  "message": "Unauthorized access. Please provide a valid token."
-}
-```
-
-Response Body (Error - 429 Too Many Request) :
-```json
-{
-  "status": "error",
-  "message": "Rate limit exceeded. Try again after some time."
-}
-```
-
-Response Body (Error - 500 Internal Server Error) :
-```json
-{
-  "status": "error",
-  "message": "An unexpected error occurred. Please try again later."
+  "data": null,
+  "message": "Kesalahan terjadi saat memproses permintaan!",
+  "statusCode" : 500,
+  "status" : "Internal Server Error"
 }
 ```

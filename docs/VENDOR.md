@@ -1,7 +1,7 @@
 # Vendor API Spec
 
 ## Create Vendor
-Endpoint : POST /api/vendors
+Endpoint : POST /api/vendor-management/vendors
 
 Request Header :
 - X-API-TOKEN : Token (Mandatory)
@@ -9,9 +9,9 @@ Request Header :
 Request Body :
 ```json
 {
-  "vendorname" : "The Gade Coffee Bogor",
-  "email" : "info@thegade.com",
-  "address" : "Kota Bogor",
+  "vendorname" : "Vendor A",
+  "email" : "info@vendora.com",
+  "address" : "Jln Pasar Mawar",
   "phone" : "08001"
 }
 ```
@@ -19,63 +19,41 @@ Request Body :
 Response Body (Success) :
 ```json
 {
-  "status" : "success",
-  "message" : "Add new vendor successfully",
-  "data" : {
-    "vendorId" : "a1b2c3d4-e5f6-7890-1234-56789abcdef0",
-    "vendorname" : "The Gade Coffe Bogor",
-    "email" : "info@thegade.com",
-    "address" : "Kota Bogor",
-    "phone" : "08001",
-    "createdAt" : "2024-10-25T10:00:00Z"
-  }
+  "message" : "Vendor PT Baca Buku berhasil ditambahkan!",
+  "statusCode" : 200,
+  "status" : "OK"
 }
 ```
 
-Response Body (Error - 400 Bad Request) :
+Response Body (Error Duplicate/Conflict) :
 ```json
 {
-  "status" : "error",
-  "message" : "Validation error",
-  "errors": [
-    {
-      "field": "vendorname",
-      "message": "Vendor name is required"
-    },
-    {
-      "field": "email",
-      "message": "Invalid email format"
-    }
-  ]
+  "statusCode" : "500",
+  "message" : "Kesalahan terjadi saat memproses permintaan!",
+  "details": "..."
 }
 ```
 
-Response Body (Error - 409 Conflict) :
+Response Body (Error Unauthorized)
 ```json
 {
-  "status" : "error",
-  "message" : "Vendor with this email or phone already exists"
+  "statusCode" : 401,
+  "message" : "Unauthorized User!",
+  "details" : "User belum terautentikasi!"
 }
 ```
 
-Response Body (Error - 429 Too Many Request) :
+Response Body (Error Rate Limit) :
 ```json
 {
-  "status": "error",
-  "message": "Rate limit exceeded. Try again after some time."
-}
-```
-
-Response Body (Error - 500 Internal Server) :
-```json
-{
-  "status" : "error",
-  "message" : "An unexpected error occurred. Please try again later."
+  "statusCode" : "500",
+  "message" : "Kesalahan terjadi saat memproses permintaan!",
+  "details": "Anda telah mencapai batas permintaan. Silakan coba lagi nanti."
 }
 ```
 
 ## Update Vendor
-Endpoint : PUT /api/vendors/{vendorId}
+Endpoint : PUT /api/vendor-management/vendors/{vendorId}
 
 Request Header :
 - X-API-TOKEN : Token (Mandatory)
@@ -83,9 +61,9 @@ Request Header :
 Request Body :
 ```json
 {
-  "vendorname" : "The Gade Coffee Bogor",
-  "email" : "info@thegade.com",
-  "address" : "Kota Bogor",
+  "vendorname" : "TOKO AA",
+  "email" : "info@vendora.com",
+  "address" : "Jln Pasar Mawar",
   "phone" : "08001"
 }
 ```
@@ -93,188 +71,155 @@ Request Body :
 Response Body (Success) :
 ```json
 {
-  "status" : "success",
-  "message" : "Update vendor successfully",
-  "data" : {
-    "vendorId" : "a1b2c3d4-e5f6-7890-1234-56789abcdef0",
-    "vendorname" : "The Gade Coffe Bogor",
-    "email" : "info@thegade.com",
-    "address" : "Kota Bogor",
-    "phone" : "08001",
-    "createdAt" : "2024-10-25T10:00:00Z"
-  }
+  "message" : "Vendor TOKO AA berhasil diubah!",
+  "statusCode" : 200,
+  "status" : "OK"
 }
 ```
 
-Response Body (Error - 400 Bad Request) :
+Response Body (Error Unauthorized)
 ```json
 {
-  "status" : "error",
-  "message" : "Invalid input. Ensure all fields follow the required format."
+  "statusCode" : 401,
+  "message" : "Unauthorized User!",
+  "details" : "User belum terautentikasi!"
 }
 ```
 
-Response Body (Error - 401 Unauthorized)
+Response Body (Error Duplicate/Conflict) :
 ```json
 {
-  "status" : "error",
-  "message" : "Unauthorized access. Please provide a valid token."
+  "statusCode" : "500",
+  "message" : "Kesalahan terjadi saat memproses permintaan!",
+  "details": "..."
 }
 ```
 
-Response Body (Error - 409 Conflict) :
+Response Body (Error Rate Limit) :
 ```json
 {
-  "status" : "error",
-  "message" : "The email or phone provided is already in use. Please use different values."
+  "statusCode" : "500",
+  "message" : "Kesalahan terjadi saat memproses permintaan!",
+  "details": "Anda telah mencapai batas permintaan. Silakan coba lagi nanti."
 }
 ```
 
-Response Body (Error - 429 Too Many Request) :
-```json
-{
-  "status": "error",
-  "message": "Rate limit exceeded. Try again after some time."
-}
-```
-
-Response Body (Error - 500 Internal Server) :
-```json
-{
-  "status" : "error",
-  "message" : "An unexpected error occurred. Please try again later."
-}
-```
-
-## Get Vendor
-Endpoint : /api/vendors/{vendorId}
-
-Request Header :
-- X-API-TOKEN : Token (Mandatory)
-
-Response Body (Success) :
-```json
-{
-  "status": "success",
-  "message": "Vendor details retrieved successfully",
-  "data": {
-    "vendorId" : "a1b2c3d4-e5f6-7890-1234-56789abcdef0",
-    "vendorname" : "The Gade Coffe Bogor",
-    "email" : "info@thegade.com",
-    "address" : "Kota Bogor",
-    "phone" : "08001",
-    "createdAt": "2024-10-25T10:00:00Z",
-    "updatedAt": "2024-10-26T08:15:00Z"
-  }
-}
-```
-
-Response Body (Error - 401 Unauthorized) :
-```json
-{
-  "status" : "error",
-  "message" : "Unauthorized access. Please provide a valid token."
-}
-```
-
-Response Body (Error - 404 Not Found) :
-```json
-{
-  "status": "error",
-  "message": "Vendor not found"
-}
-```
-
-Response Body (Error - 429 Too Many Request) :
-```json
-{
-  "status": "error",
-  "message": "Rate limit exceeded. Try again after some time."
-}
-```
-
-Response Body (Error - 500 Internal Server) :
-```json
-{
-  "status" : "error",
-  "message" : "An unexpected error occurred. Please try again later."
-}
-```
-
-## Search Vendor
-Endpoint : GET /api/vendors
-
-Request Header :
-- X-API-TOKEN : Token (Mandatory)
+## Get All Vendor
+Endpoint : /api/vendor-management/vendors
 
 Query Parameter :
-- name : String, vendor name, using like query, optional
-- email : String, vendor email, using like query, optional
-- address : String, vendor address, using like query, optional
-- phone : Integer, vendor phone, using like query, optional
+- vendorName : String, vendor name, using like query, optional
 - page : Integer, start from 0, default 0
-- size : Integer, default 10
+- size : Integer, default 8
+- sort : vendorName,asc (default)
+
+Request Header :
+- X-API-TOKEN : Token (Mandatory)
 
 Response Body (Success) :
 ```json
 {
-  "status": "success",
-  "message": "Vendors retrieved successfully",
-  "data": {
-    "vendors": [
-      {
-        "vendorId": "a1b2c3d4-e5f6-7890-1234-56789abcdef0",
-        "vendorname": "The Gade Coffee Bogor",
-        "email": "info@thegade.com",
-        "address": "Kota Bogor",
-        "phone": "08001",
-        "createdAt": "2024-10-25T10:00:00Z"
-      }
-    ],
-    "pagination": {
-      "page": 1,
-      "pageSize": 10,
-      "totalPages": 5,
-      "totalItems": 50
+  "total" : 2,
+  "data" : [
+    {
+      "vendorId": "5ef8ad19-b1b2-4ad4-a971-89a984399869",
+      "vendorName": "PT Penghapus",
+      "vendorEmail": "info@penghapus.com",
+      "vendorAddress": "Jln Pasar Mawar",
+      "vendorPhone": "08001"
+    },
+    {
+      "vendorId": "601ef675-6e75-40f8-8f9e-94d3e4f63cc2",
+      "vendorName": "PT Penggaris",
+      "vendorEmail": "info@penggaris.com",
+      "vendorAddress": "Jln Pasar Melati",
+      "vendorPhone": "08002"
     }
-  }
+  ],
+  "message": "Berhasil memuat My Vendor!",
+  "statusCode": 200,
+  "status": "OK"
 }
 ```
 
-Response Body (Error - 401 Unauthorized) :
+Response Body (Error Not Found)
 ```json
 {
-  "status" : "error",
-  "message" : "Unauthorized access. Please provide a valid token."
+  "statusCode": 404,
+  "message": "Data tidak ditemukan!",
+  "details": "Data tidak ditemukan!"
 }
 ```
 
-Response Body (Error - 404 Not Found) :
+Response Body (Error Unauthorized)
 ```json
 {
-  "status": "error",
-  "message": "No vendors found matching the query."
+  "statusCode" : 401,
+  "message" : "Unauthorized User!",
+  "details" : "User belum terautentikasi!"
 }
 ```
 
-Response Body (Error - 429 Too Many Request) :
+Response Body (Error Rate Limit) :
 ```json
 {
-  "status": "error",
-  "message": "Rate limit exceeded. Try again after some time."
+  "statusCode" : "500",
+  "message" : "Kesalahan terjadi saat memproses permintaan!",
+  "details": "Anda telah mencapai batas permintaan. Silakan coba lagi nanti."
 }
 ```
 
-Response Body (Error - 500 Internal Server) :
+## GET Vendor By Id
+Endpoint : /api/vendor-management/vendors/{vendorId}
+
+Request Header :
+- X-API-TOKEN : Token (Mandatory)
+
+Response Body (Success) :
+```json
+"total": 1,
+    "data": {
+        "vendorId": "5ef8ad19-b1b2-4ad4-a971-89a984399869",
+        "vendorName": "PT Penghapus",
+        "vendorEmail": "info@penghapus.com",
+        "vendorAddress": "Jln Pasar Mawar",
+        "vendorPhone": "08001"
+        "userId": "8455dd9b-ff97-4678-84bd-e760ba14c66c"
+    },
+    "message": "Vendor berhasil ditemukan!",
+    "statusCode": 200,
+    "status": "OK"
+```
+
+Response Body (Error Not Found)
 ```json
 {
-  "status": "error",
-  "message": "An unexpected error occurred. Please try again later."
+  "statusCode": 404,
+  "message": "Data tidak ditemukan!",
+  "details": "Data tidak ditemukan!"
+}
+```
+
+Response Body (Error Unauthorized)
+```json
+{
+  "statusCode" : 401,
+  "message" : "Unauthorized User!",
+  "details" : "User belum terautentikasi!"
+}
+```
+
+Response Body (Error Rate Limit) :
+```json
+{
+  "statusCode" : "500",
+  "message" : "Kesalahan terjadi saat memproses permintaan!",
+  "details": "Anda telah mencapai batas permintaan. Silakan coba lagi nanti."
 }
 ```
 
 ## Remove Vendor
-Endpoint : DELETE /api/vendors/{vendorId}
+Endpoint : DELETE /api/vendor-management/vendors/{vendorId}
 
 Request Header :
 - X-API-TOKEN : Token (Mandatory)
@@ -282,39 +227,37 @@ Request Header :
 Response Body (Success) :
 ```json
 {
-  "status": "success",
-  "message": "Vendor deleted successfully"
+  "total": 0,
+  "data": null,
+  "message": "Vendor berhasil dihapus!",
+  "statusCode": 200,
+  "status": "OK"
 }
 ```
 
-Response Body (Error - 401 Unauthorized) :
+Response Body (Error Not Found)
 ```json
 {
-  "status" : "error",
-  "message" : "Unauthorized access. Please provide a valid token."
+  "statusCode": 404,
+  "message": "Data tidak ditemukan!",
+  "details": "Data tidak ditemukan!"
 }
 ```
 
-Response Body (Error - 404 Not Found)
+Response Body (Error Unauthorized)
 ```json
 {
-  "status": "error",
-  "message": "Vendor not found"
+  "statusCode" : 401,
+  "message" : "Unauthorized User!",
+  "details" : "User belum terautentikasi!"
 }
 ```
 
-Response Body (Error - 429 Too Many Request) :
+Response Body (Error Rate Limit) :
 ```json
 {
-  "status": "error",
-  "message": "Rate limit exceeded. Try again after some time."
-}
-```
-
-Response Body (Error - 500 Internal Server) :
-```json
-{
-  "status": "error",
-  "message": "An unexpected error occurred. Please try again later."
+  "statusCode" : "500",
+  "message" : "Kesalahan terjadi saat memproses permintaan!",
+  "details": "Anda telah mencapai batas permintaan. Silakan coba lagi nanti."
 }
 ```
