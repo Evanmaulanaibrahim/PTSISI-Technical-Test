@@ -8,6 +8,7 @@ import com.evanmaulanaibrahim.backenddev.dto.response.MyVendorResDTO;
 import com.evanmaulanaibrahim.backenddev.dto.response.ResponseBodyDTO;
 import com.evanmaulanaibrahim.backenddev.dto.response.VendorDTO;
 import com.evanmaulanaibrahim.backenddev.exception.classes.DataNotFoundException;
+import com.evanmaulanaibrahim.backenddev.exception.classes.RateLimitExceededException;
 import com.evanmaulanaibrahim.backenddev.exception.classes.UnauthorizedUserException;
 import com.evanmaulanaibrahim.backenddev.model.User;
 import com.evanmaulanaibrahim.backenddev.model.Vendor;
@@ -15,6 +16,7 @@ import com.evanmaulanaibrahim.backenddev.repository.UsersRepository;
 import com.evanmaulanaibrahim.backenddev.repository.VendorsRepository;
 import com.evanmaulanaibrahim.backenddev.security.service.UserDetailsImplement;
 import com.evanmaulanaibrahim.backenddev.service.specification.VendorSpesification;
+import io.github.bucket4j.Bucket;
 import jakarta.persistence.EntityNotFoundException;
 import lib.i18n.utility.MessageUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -46,6 +48,9 @@ public class VendorsService {
     @Autowired
     private MessageUtil messageUtil;
 
+    @Autowired
+    private RateLimiterService rateLimiterService;
+
     @Transactional
     public MessageResponse create(CreateVendorRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -55,6 +60,14 @@ public class VendorsService {
 
         UserDetailsImplement userDetails = (UserDetailsImplement) authentication.getPrincipal();
         UUID userId = userDetails.getId();
+
+        // Apply rate limiting
+        String key = userId.toString();
+        Bucket bucket = rateLimiterService.resolveBucket(key);
+
+        if (!bucket.tryConsume(1)) {
+            throw new RateLimitExceededException(messageUtil.get("application.error.rate-limit.exceeded"));
+        }
 
         // Retrieve the User entity associated with the authenticated user
         User user = usersRepository.findById(userId)
@@ -88,6 +101,14 @@ public class VendorsService {
         UserDetailsImplement userDetails = (UserDetailsImplement) authentication.getPrincipal();
         UUID userId = userDetails.getId();
 
+        // Apply rate limiting
+        String key = userId.toString();
+        Bucket bucket = rateLimiterService.resolveBucket(key);
+
+        if (!bucket.tryConsume(1)) {
+            throw new RateLimitExceededException(messageUtil.get("application.error.rate-limit.exceeded"));
+        }
+
         Vendor existingVendor = vendorsRepository.findByVendorIdAndUserId(request.getVendorId(), userId)
                 .orElseThrow(() -> new EntityNotFoundException(
                         messageUtil.get("application.error.data-not-found", request.getVendorId())));
@@ -116,6 +137,14 @@ public class VendorsService {
 
         UserDetailsImplement userDetails = (UserDetailsImplement) authentication.getPrincipal();
         UUID userId = userDetails.getId();
+
+        // Apply rate limiting
+        String key = userId.toString();
+        Bucket bucket = rateLimiterService.resolveBucket(key);
+
+        if (!bucket.tryConsume(1)) {
+            throw new RateLimitExceededException(messageUtil.get("application.error.rate-limit.exceeded"));
+        }
 
         Vendor vendor = vendorsRepository.findByVendorIdAndUserId(vendorId, userId)
                 .orElseThrow(() -> new EntityNotFoundException(messageUtil.get("application.error.data-not-found", vendorId)));
@@ -146,6 +175,14 @@ public class VendorsService {
 
         UserDetailsImplement userDetails = (UserDetailsImplement) authentication.getPrincipal();
         UUID userId = userDetails.getId();
+
+        // Apply rate limiting
+        String key = userId.toString();
+        Bucket bucket = rateLimiterService.resolveBucket(key);
+
+        if (!bucket.tryConsume(1)) {
+            throw new RateLimitExceededException(messageUtil.get("application.error.rate-limit.exceeded"));
+        }
 
         Specification<Vendor> vendorSpec = VendorSpesification.vendorFilter(myVendorRequestDTO, userId);
 
@@ -186,11 +223,19 @@ public class VendorsService {
         UserDetailsImplement userDetails = (UserDetailsImplement) authentication.getPrincipal();
         UUID userId = userDetails.getId();
 
+        // Apply rate limiting
+        String key = userId.toString();
+        Bucket bucket = rateLimiterService.resolveBucket(key);
+
+        if (!bucket.tryConsume(1)) {
+            throw new RateLimitExceededException(messageUtil.get("application.error.rate-limit.exceeded"));
+        }
+
         Vendor vendor = vendorsRepository.findByVendorIdAndUserId(vendorId, userId)
                 .orElseThrow(() -> new EntityNotFoundException(messageUtil.get("application.error.data-not-found", vendorId)));
 
         vendorsRepository.delete(vendor);
-        
+
         return ResponseBodyDTO.builder()
                 .total(0)
                 .data(null)

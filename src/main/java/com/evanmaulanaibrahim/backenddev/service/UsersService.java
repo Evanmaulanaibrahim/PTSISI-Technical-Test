@@ -9,6 +9,7 @@ import com.evanmaulanaibrahim.backenddev.model.User;
 import com.evanmaulanaibrahim.backenddev.repository.UsersRepository;
 import com.evanmaulanaibrahim.backenddev.security.jwt.JwtUtils;
 import com.evanmaulanaibrahim.backenddev.security.service.UserDetailsImplement;
+import io.github.bucket4j.Bucket;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import lib.i18n.utility.MessageUtil;
@@ -49,10 +50,20 @@ public class UsersService {
     @Autowired
     JwtUtils jwtUtils;
 
+    @Autowired
+    RateLimiterService rateLimiterService;
+
     final HttpStatus statusOK = HttpStatus.OK;
 
     @Transactional
     public MessageResponse register(RegisterRequest request) {
+        String key = request.getUsername();
+        Bucket bucket = rateLimiterService.resolveBucket(key);
+
+        if (!bucket.tryConsume(1)) {
+            return new MessageResponse("Rate limit exceeded. Try again later.", HttpStatus.TOO_MANY_REQUESTS.value(), "ERROR");
+        }
+
         Set<ConstraintViolation<RegisterRequest>> constraintViolations = validator.validate(request);
 
         if (!constraintViolations.isEmpty()) {
@@ -97,6 +108,17 @@ public class UsersService {
     }
 
     public ApiDataResponseBuilder signIn(LoginRequest loginRequest) {
+        String key = loginRequest.getUsername();
+        Bucket bucket = rateLimiterService.resolveBucket(key);
+
+        if (!bucket.tryConsume(1)) {
+            return ApiDataResponseBuilder.builder()
+                    .message("Rate limit exceeded. Try again later.")
+                    .statusCode(HttpStatus.TOO_MANY_REQUESTS.value())
+                    .status(HttpStatus.TOO_MANY_REQUESTS)
+                    .build();
+        }
+
         if (Boolean.FALSE.equals(userRepository.existsByUsername(loginRequest.getUsername()))) {
             return ApiDataResponseBuilder.builder()
                     .message(messageUtil.get("application.error.auth.user.not-found"))
