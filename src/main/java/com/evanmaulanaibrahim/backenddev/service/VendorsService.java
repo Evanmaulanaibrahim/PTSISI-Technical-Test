@@ -177,4 +177,28 @@ public class VendorsService {
         return new ResponseEntity<>(responseBody, HttpStatus.OK);
     }
 
+    public ResponseBodyDTO deleteVendorById(UUID vendorId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (!(authentication.getPrincipal() instanceof UserDetailsImplement)) {
+            throw new UnauthorizedUserException(messageUtil.get("application.error.unauthorized-user.detail"));
+        }
+
+        UserDetailsImplement userDetails = (UserDetailsImplement) authentication.getPrincipal();
+        UUID userId = userDetails.getId();
+
+        Vendor vendor = vendorsRepository.findByVendorIdAndUserId(vendorId, userId)
+                .orElseThrow(() -> new EntityNotFoundException(messageUtil.get("application.error.data-not-found", vendorId)));
+
+        vendorsRepository.delete(vendor);
+        
+        return ResponseBodyDTO.builder()
+                .total(0)
+                .data(null)
+                .message(messageUtil.get("application.success.vendor.deleted"))
+                .statusCode(HttpStatus.OK.value())
+                .status(HttpStatus.OK.getReasonPhrase())
+                .build();
+    }
+
+
 }

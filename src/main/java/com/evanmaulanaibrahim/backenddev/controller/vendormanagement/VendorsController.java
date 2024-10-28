@@ -48,5 +48,10 @@ public class VendorsController {
         return vendorsService.getMyVendor(myVendorRequestDTO, page);
     }
 
+    @DeleteMapping("/vendors/{vendorId}")
+    public ResponseEntity<ResponseBodyDTO> deleteVendorById(@PathVariable UUID vendorId) {
+        ResponseBodyDTO response = vendorsService.deleteVendorById(vendorId);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
 }
