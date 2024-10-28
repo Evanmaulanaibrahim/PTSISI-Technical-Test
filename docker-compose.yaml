@@ -2,18 +2,17 @@ version: '3.8'
 
 services:
   db:
-    image: mysql:latest
-    container_name: my-mysql-backend
+    image: postgres:latest
+    container_name: my-postgres-backend
     environment:
-      MYSQL_USER: evanmaulanaibr        # Ganti dengan nama pengguna yang diinginkan
-      MYSQL_PASSWORD: qwerty1234        # Ganti dengan kata sandi yang diinginkan
-      MYSQL_ROOT_PASSWORD: rootpassword # Password untuk user root
-      MYSQL_DATABASE: backend           # Ganti dengan nama database yang diinginkan
+      POSTGRES_USER: postgres       # Change to desired username
+      POSTGRES_PASSWORD:        # Change to desired password
+      POSTGRES_DB: backend                # Change to desired database name
     volumes:
-      - mysql-data:/var/lib/mysql
+      - postgres-data:/var/lib/postgresql/data
     ports:
-      - "3306:3306"
+      - "5432:5432"
     restart: always
 
 volumes:
-  mysql-data:
+  postgres-data:
